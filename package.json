@@ -4,7 +4,8 @@
   "description": "An es6 extension of Google Maps. This package includes helper functions to get maps up and running with ease.",
   "main": "dist/index.js",
   "dependencies": {
-    "gulp-watch": "^5.0.1"
+    "@google/markerclustererplus": "^5.0.4",
+    "@meteora-digital/helpers": "^1.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",
@@ -17,8 +18,6 @@
     "gulp-watch": "^5.0.1"
   },
   "dependecies": {
-    "@google/markerclustererplus": "^5.0.4",
-    "@meteora-digital/helpers": "^1.2.2"
   },
   "scripts": {
     "test": "echo \"No test specified\""
