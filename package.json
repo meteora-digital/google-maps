@@ -1,6 +1,6 @@
 {
   "name": "@meteora-digital/google-maps",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An es6 extension of Google Maps. This package includes helper functions to get maps up and running with ease.",
   "main": "dist/index.js",
   "dependencies": {
@@ -17,8 +17,7 @@
     "gulp-plumber": "^1.2.1",
     "gulp-watch": "^5.0.1"
   },
-  "dependecies": {
-  },
+  "dependecies": {},
   "scripts": {
     "test": "echo \"No test specified\""
   },
