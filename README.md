@@ -1,9 +1,15 @@
 # Google Maps Extension
 
+Add this to your project
+
+```sh
+$ yarn add @meteora-digital/google-maps
+```
+
 Import with webpack
 
 ```javascript
-import GoogleMaps from '../packages/maps/';
+import GoogleMaps from '@meteora-digital/google-maps';
 ```
 
 Our locations will be supplied as an array of data:
