@@ -19,7 +19,7 @@
     "gulp-watch": "^5.0.1"
   },
   "scripts": {
-    "test": "gulp"
+    "test": "echo \"No test specified\""
   },
   "keywords": [
     "es6",
