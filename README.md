@@ -6,7 +6,7 @@ Import with webpack
 import GoogleMaps from '../packages/maps/';
 ```
 
-Or locations will be supplied as an array of data:
+Our locations will be supplied as an array of data:
 
 ```javascript
 const locationArray = [
