@@ -19,7 +19,7 @@
   "dependecies": {
     "@google/markerclustererplus": "^5.0.4",
     "@meteora-digital/helpers": "^1.2.2"
-  }
+  },
   "scripts": {
     "test": "echo \"No test specified\""
   },
