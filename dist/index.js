@@ -170,8 +170,8 @@ var Controller = /*#__PURE__*/function () {
         center.lng += location.position.lng;
       });
       return {
-        lat: center.lat / locationsArray.length + 1,
-        lng: center.lng / locationsArray.length + 1
+        lat: center.lat / (locationsArray.length + 1),
+        lng: center.lng / (locationsArray.length + 1)
       };
     } // This function will make it easier to fit all markers in the map
 

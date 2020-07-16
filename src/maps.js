@@ -155,8 +155,8 @@ class Controller {
 	    });
 
 	    return {
-	    	lat: center.lat / locationsArray.length + 1,
-	    	lng: center.lng / locationsArray.length + 1,
+	    	lat: center.lat / (locationsArray.length + 1),
+	    	lng: center.lng / (locationsArray.length + 1),
 	    };
 	}
 
