@@ -173,6 +173,17 @@ var Controller = /*#__PURE__*/function () {
         lat: center.lat / locationsArray.length + 1,
         lng: center.lng / locationsArray.length + 1
       };
+    } // This function will make it easier to fit all markers in the map
+
+  }, {
+    key: "fitBounds",
+    value: function fitBounds() {
+      var markersArray = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.markers;
+      var bounds = new GoogleMaps.LatLngBounds();
+      markersArray.forEach(function (marker) {
+        return bounds.extend(marker.position);
+      });
+      this.map.fitBounds(bounds);
     } // This function will be used to insert a template for the infoWindows
 
   }, {
@@ -191,7 +202,8 @@ var Controller = /*#__PURE__*/function () {
   return Controller;
 }();
 
-GoogleMaps.Load = function (key) {
+GoogleMaps.Load = function () {
+  var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
   return load(key);
 }, GoogleMaps.Render = function () {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};

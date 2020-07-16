@@ -160,6 +160,15 @@ class Controller {
 	    };
 	}
 
+	// This function will make it easier to fit all markers in the map
+	fitBounds(markersArray = this.markers) {
+		const bounds = new GoogleMaps.LatLngBounds();
+
+		markersArray.forEach((marker) => bounds.extend(marker.position));
+
+		this.map.fitBounds(bounds);
+	}
+
 	// This function will be used to insert a template for the infoWindows
 	infoTemplate(func) {
 		this.locations.forEach((location) => {
@@ -170,7 +179,7 @@ class Controller {
 	}
 }
 
-GoogleMaps.Load = (key) => load(key),
+GoogleMaps.Load = (key = '') => load(key),
 GoogleMaps.Render = (options = {}) => render(options),
 GoogleMaps.Controller = (el, options = {}) => {
 	if (window.google) {
