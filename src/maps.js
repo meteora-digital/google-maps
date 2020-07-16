@@ -123,7 +123,7 @@ class Controller {
 		});
 
 		// Center the map
-		this.map.panTo(this.findCenter(locationsArray));
+		this.fitBounds(visibleMarkers);
 
 		this.updateCluster(visibleMarkers);
 	}
@@ -133,7 +133,7 @@ class Controller {
             marker.setMap(this.map);
         });
 
-        this.map.panTo(this.findCenter());
+        this.fitBounds();
 
         this.updateCluster(this.markers);
     }

@@ -132,7 +132,7 @@ var Controller = /*#__PURE__*/function () {
         });
       }); // Center the map
 
-      this.map.panTo(this.findCenter(locationsArray));
+      this.fitBounds(visibleMarkers);
       this.updateCluster(visibleMarkers);
     }
   }, {
@@ -143,7 +143,7 @@ var Controller = /*#__PURE__*/function () {
       this.markers.forEach(function (marker) {
         marker.setMap(_this3.map);
       });
-      this.map.panTo(this.findCenter());
+      this.fitBounds();
       this.updateCluster(this.markers);
     }
   }, {
