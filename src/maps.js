@@ -1,4 +1,4 @@
-import Cluster from '@google/markerclustererplus';
+import Cluster from '@google/markerclustererplus/dist/markerclustererplus.umd.js';
 import {objectAssign} from '@meteora-digital/helpers';
 
 let GoogleMaps = {};
