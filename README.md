@@ -90,7 +90,7 @@ const locationArray = [
 
 const markerTypes = {
 	green: {
-		fill: '#00785f',
+		fillColor: '#00785f',
 	},
 }
 
