@@ -66,9 +66,26 @@ GoogleMaps.Render(() => {
 |--------|------|-------------|
 | markers | Boolean (default: true) | enables / disables the creation of map markers |
 | cluster | Boolean (default: false) | enables / disables map marker clusters |
-| clusterIconPath | String | A URL path to a folder containing 5 .png image files [Read more](https://developers.google.com/maps/documentation/javascript/marker-clustering#adding-a-marker-clusterer) |
+| clusterSettings | Object | Use this to manipulate the appearance of the clusters [Read more](https://googlemaps.github.io/v3-utility-library/interfaces/_google_markerclustererplus.markerclustereroptions.html) |
 | icon | Object or String | The Object option uses Google's [SVG path notation](https://developers.google.com/maps/documentation/javascript/symbols#add_to_marker). A String should be a URL to a .png file.|
 | map | Object | Here we pass our default map settings, such as the zoom level and the map center. [Read more](https://developers.google.com/maps/documentation/javascript/tutorial#MapOptions) |
+
+# clusterSettings
+
+While applying styles to the clusterSettings, I have allowed the developer to define one folder URL for the cluster images on the imagePath key, similar to the default, unstyled cluster icons so that we may use 1 icon for each cluster size. 
+
+```javascript
+
+clusterSettings: {
+	imagePath: '/themes/mercury/dist/images/maps/m',
+	styles: [{
+		height: 90,
+		width: 90,
+		textColor: '#fff',
+	}]
+}
+
+```
 
 # Additional control
 

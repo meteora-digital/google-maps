@@ -56,7 +56,10 @@ var Controller = /*#__PURE__*/function () {
       locations: [],
       markers: true,
       cluster: false,
-      clusterIconPath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+      clusterSettings: {
+        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+        imageSizes: 90
+      },
       icon: this.iconDefaults,
       map: {
         disableDefaultUI: false,
@@ -108,11 +111,13 @@ var Controller = /*#__PURE__*/function () {
         }); // We store these markers in an array for filtering later on.
 
         _this.markers.push(marker);
+      }); // If we wanna style the cluster icons but cbf writing the image url 5 times, we can inherit it like this :)
+
+      this.settings.clusterSettings.styles.forEach(function (item, i) {
+        if (item.url === undefined) item.url = "".concat(_this.settings.clusterSettings.imagePath + (i + 1), ".png");
       }); // this.settings.cluster is a boolean, but not for long
 
-      if (this.settings.cluster) this.settings.cluster = new Cluster(this.map, this.markers, {
-        imagePath: this.settings.clusterIconPath
-      });
+      if (this.settings.cluster) this.settings.cluster = new Cluster(this.map, this.markers, this.settings.clusterSettings);
     }
   }, {
     key: "filterMarkers",
