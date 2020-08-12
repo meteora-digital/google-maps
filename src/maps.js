@@ -100,6 +100,7 @@ class Controller {
 			// Add a click handler that opens the infoWindow - if it exists.
 			marker.addListener('click', () => {
 				if (this.info[index]) this.info[index].open(this.map, marker);
+				this.map.panTo(marker.position);
 			});
 
 			// We store these markers in an array for filtering later on.

@@ -57,8 +57,7 @@ var Controller = /*#__PURE__*/function () {
       markers: true,
       cluster: false,
       clusterSettings: {
-        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-        imageSizes: 90
+        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
       },
       icon: this.iconDefaults,
       map: {
@@ -108,6 +107,8 @@ var Controller = /*#__PURE__*/function () {
 
         marker.addListener('click', function () {
           if (_this.info[index]) _this.info[index].open(_this.map, marker);
+
+          _this.map.panTo(marker.position);
         }); // We store these markers in an array for filtering later on.
 
         _this.markers.push(marker);
