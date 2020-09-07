@@ -18,6 +18,11 @@ function load(key) {
   } else {
     console.log('Google Maps API has already been loaded. Aborting.');
   }
+} // A radius function 
+
+
+function rad(x) {
+  return x * Math.PI / 180;
 } // The render function will wait for google maps to load before firing. 
 
 
@@ -202,6 +207,49 @@ var Controller = /*#__PURE__*/function () {
           content: func(location)
         }));
       });
+    }
+  }, {
+    key: "withUserLocation",
+    value: function withUserLocation(func) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          func({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        });
+      } else {
+        return false;
+      }
+    }
+  }, {
+    key: "findClosestTo",
+    value: function findClosestTo(position) {
+      if (position.lat && position.lng) {
+        var radius = 6371; // radius of earth in km
+
+        var distance = null;
+        var closest = null;
+        this.markers.forEach(function (marker) {
+          var markerLat = marker.position.lat();
+          var markerLng = marker.position.lng();
+          var distanceLat = rad(markerLat - position.lat);
+          var distanceLng = rad(markerLng - position.lng);
+          var a = Math.sin(distanceLat / 2) * Math.sin(distanceLat / 2) + Math.cos(rad(position.lat)) * Math.cos(rad(position.lat)) * Math.sin(distanceLng / 2) * Math.sin(distanceLng / 2);
+          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          var d = radius * c;
+
+          if (distance == null || d < distance) {
+            distance = d;
+            closest = marker;
+          }
+
+          ;
+        });
+        return closest;
+      } else {
+        console.log('argument needs to be a lat / lng object');
+      }
     }
   }]);
 

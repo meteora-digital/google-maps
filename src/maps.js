@@ -17,6 +17,11 @@ function load(key) {
 	}
 }
 
+// A radius function 
+function rad(x) {
+	return x * Math.PI / 180;
+}
+
 // The render function will wait for google maps to load before firing. 
 function render(func) {
 	if (window.google) {
@@ -137,36 +142,36 @@ class Controller {
 	}
 
 	showAllMarkers() {
-        this.markers.forEach((marker) => {
-            marker.setMap(this.map);
-        });
+		this.markers.forEach((marker) => {
+			marker.setMap(this.map);
+		});
 
-        this.fitBounds();
+		this.fitBounds();
 
-        this.updateCluster(this.markers);
-    }
-
-    updateCluster(locations) {
-    	if (this.settings.cluster) {
-    		this.settings.cluster.clearMarkers();
-    		this.settings.cluster.addMarkers(locations);
-    	};
-    }
-
-    // This function simply finds the average lat and lng so we can place the user in the middle of each of them
-	findCenter(locationsArray = this.locations) {
-	    const center = {lat: 0, lng: 0};
-
-	    locationsArray.forEach((location) => {
-	    	center.lat +=  location.position.lat;
-	    	center.lng +=  location.position.lng;
-	    });
-
-	    return {
-	    	lat: center.lat / locationsArray.length,
-	    	lng: center.lng / locationsArray.length,
-	    };
+		this.updateCluster(this.markers);
 	}
+
+	updateCluster(locations) {
+		if (this.settings.cluster) {
+			this.settings.cluster.clearMarkers();
+			this.settings.cluster.addMarkers(locations);
+		};
+	}
+
+  // This function simply finds the average lat and lng so we can place the user in the middle of each of them
+  findCenter(locationsArray = this.locations) {
+  	const center = {lat: 0, lng: 0};
+
+  	locationsArray.forEach((location) => {
+  		center.lat +=  location.position.lat;
+  		center.lng +=  location.position.lng;
+  	});
+
+  	return {
+  		lat: center.lat / locationsArray.length,
+  		lng: center.lng / locationsArray.length,
+  	};
+  }
 
 	// This function will make it easier to fit all markers in the map
 	fitBounds(markersArray = this.markers) {
@@ -181,9 +186,49 @@ class Controller {
 	infoTemplate(func) {
 		this.locations.forEach((location) => {
 			this.info.push(new GoogleMaps.InfoWindow({
-			    content: func(location),
+				content: func(location),
 			}));
 		});
+	}
+
+	withUserLocation(func) {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition((position) => {
+				func({
+					lat: position.coords.latitude,
+					lng: position.coords.longitude
+				});
+			});
+		} else {
+			return false;
+		}
+	}
+
+	findClosestTo(position) {
+		if (position.lat && position.lng) {
+			let radius = 6371; // radius of earth in km
+			let distance = null;
+			let closest = null;
+
+			this.markers.forEach((marker) => {
+			  let markerLat = marker.position.lat();
+			  let markerLng = marker.position.lng();
+			  let distanceLat = rad(markerLat - position.lat);
+			  let distanceLng = rad(markerLng - position.lng);
+			  let a = Math.sin(distanceLat/2) * Math.sin(distanceLat/2) + Math.cos(rad(position.lat)) * Math.cos(rad(position.lat)) * Math.sin(distanceLng/2) * Math.sin(distanceLng/2);
+			  let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+			  let d = radius * c;
+
+			  if (distance == null || d < distance) {
+			    distance = d;
+			    closest = marker;
+			  };
+			});
+
+			return closest;
+		}else {
+			console.log('argument needs to be a lat / lng object');
+		}
 	}
 }
 

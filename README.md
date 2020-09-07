@@ -147,6 +147,32 @@ Shows all the markers. Great after clearing any filters.
 map.showAllMarkers();
 ```
 
+```fitBounds```
+
+A shorthand function to fit the map boundaries to an array of markers.
+
+```javascript
+map.fitBounds(map.markers);
+```
+
+```withUserLocation```
+
+A shorthand function to find the user's location and do something with it.
+
+```javascript
+map.withUserLocation((location) => {
+  map.fitBounds([map.findClosestTo(location)]);
+});
+```
+
+```findClosestTo```
+
+A shorthand function to find the closest marker to a lat / lng object coordinates.
+Returns the closest marker. 
+
+```javascript
+  map.findClosestTo(position);
+```
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
