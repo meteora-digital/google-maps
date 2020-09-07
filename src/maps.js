@@ -191,6 +191,7 @@ class Controller {
 		});
 	}
 
+	// This function will get the user's geolocation, and then pass that into the function argument
 	withUserLocation(func) {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition((position) => {
@@ -204,6 +205,7 @@ class Controller {
 		}
 	}
 
+	// This function takes an object with a lat and lng value and returns the closest marker from the map.markers array.
 	findClosestTo(position) {
 		if (position.lat && position.lng) {
 			let radius = 6371; // radius of earth in km

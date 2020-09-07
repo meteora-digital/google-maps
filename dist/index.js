@@ -207,7 +207,8 @@ var Controller = /*#__PURE__*/function () {
           content: func(location)
         }));
       });
-    }
+    } // This function will get the user's geolocation, and then pass that into the function argument
+
   }, {
     key: "withUserLocation",
     value: function withUserLocation(func) {
@@ -221,7 +222,8 @@ var Controller = /*#__PURE__*/function () {
       } else {
         return false;
       }
-    }
+    } // This function takes an object with a lat and lng value and returns the closest marker from the map.markers array.
+
   }, {
     key: "findClosestTo",
     value: function findClosestTo(position) {
