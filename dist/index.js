@@ -119,9 +119,12 @@ var Controller = /*#__PURE__*/function () {
         _this.markers.push(marker);
       }); // If we wanna style the cluster icons but cbf writing the image url 5 times, we can inherit it like this :)
 
-      this.settings.clusterSettings.styles.forEach(function (item, i) {
-        if (item.url === undefined) item.url = "".concat(_this.settings.clusterSettings.imagePath + (i + 1), ".png");
-      }); // this.settings.cluster is a boolean, but not for long
+      if (this.settings.clusterSettings.styles !== undefined) {
+        this.settings.clusterSettings.styles.forEach(function (item, i) {
+          if (item.url === undefined) item.url = "".concat(_this.settings.clusterSettings.imagePath + (i + 1), ".png");
+        });
+      } // this.settings.cluster is a boolean, but not for long
+
 
       if (this.settings.cluster) this.settings.cluster = new Cluster(this.map, this.markers, this.settings.clusterSettings);
     }
