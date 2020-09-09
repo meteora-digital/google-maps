@@ -1,6 +1,6 @@
 {
   "name": "@meteora-digital/google-maps",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "An es6 extension of Google Maps. This package includes helper functions to get maps up and running with ease.",
   "main": "dist/index.js",
   "dependencies": {
