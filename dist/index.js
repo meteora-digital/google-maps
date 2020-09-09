@@ -167,7 +167,7 @@ var Controller = /*#__PURE__*/function () {
 
       if (this.settings.cluster) {
         this.settings.cluster.clearMarkers();
-        this.settings.cluster.addMarkers(locations);
+        this.settings.cluster.addMarkers(locationsArray);
       }
 
       ;

@@ -154,7 +154,7 @@ class Controller {
 	updateCluster(locationsArray = this.locations) {
 		if (this.settings.cluster) {
 			this.settings.cluster.clearMarkers();
-			this.settings.cluster.addMarkers(locations);
+			this.settings.cluster.addMarkers(locationsArray);
 		};
 	}
 
