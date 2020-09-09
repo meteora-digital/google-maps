@@ -143,15 +143,10 @@ class Controller {
 	}
 
 	showAllMarkers() {
-		this.markers.forEach((marker) => {
-			marker.setMap(this.map);
-		});
-
-		this.updateCluster();
-		this.fitBounds();
+		this.filterMarkers();
 	}
 
-	updateCluster(locationsArray = this.locations) {
+	updateCluster(locationsArray = this.markers) {
 		if (this.settings.cluster) {
 			this.settings.cluster.clearMarkers();
 			this.settings.cluster.addMarkers(locationsArray);

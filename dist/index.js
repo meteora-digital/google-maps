@@ -152,18 +152,12 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "showAllMarkers",
     value: function showAllMarkers() {
-      var _this3 = this;
-
-      this.markers.forEach(function (marker) {
-        marker.setMap(_this3.map);
-      });
-      this.updateCluster();
-      this.fitBounds();
+      this.filterMarkers();
     }
   }, {
     key: "updateCluster",
     value: function updateCluster() {
-      var locationsArray = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
+      var locationsArray = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.markers;
 
       if (this.settings.cluster) {
         this.settings.cluster.clearMarkers();
@@ -205,10 +199,10 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "infoTemplate",
     value: function infoTemplate(func) {
-      var _this4 = this;
+      var _this3 = this;
 
       this.locations.forEach(function (location) {
-        _this4.info.push(new GoogleMaps.InfoWindow({
+        _this3.info.push(new GoogleMaps.InfoWindow({
           content: func(location)
         }));
       });
