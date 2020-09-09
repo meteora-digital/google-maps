@@ -138,9 +138,8 @@ class Controller {
 		});
 
 		// Center the map
-		this.fitBounds(visibleMarkers);
-
 		this.updateCluster(visibleMarkers);
+		this.fitBounds(visibleMarkers);
 	}
 
 	showAllMarkers() {
@@ -148,12 +147,11 @@ class Controller {
 			marker.setMap(this.map);
 		});
 
+		this.updateCluster();
 		this.fitBounds();
-
-		this.updateCluster(this.markers);
 	}
 
-	updateCluster(locations) {
+	updateCluster(locationsArray = this.locations) {
 		if (this.settings.cluster) {
 			this.settings.cluster.clearMarkers();
 			this.settings.cluster.addMarkers(locations);

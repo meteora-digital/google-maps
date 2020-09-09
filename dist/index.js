@@ -146,8 +146,8 @@ var Controller = /*#__PURE__*/function () {
         });
       }); // Center the map
 
-      this.fitBounds(visibleMarkers);
       this.updateCluster(visibleMarkers);
+      this.fitBounds(visibleMarkers);
     }
   }, {
     key: "showAllMarkers",
@@ -157,12 +157,14 @@ var Controller = /*#__PURE__*/function () {
       this.markers.forEach(function (marker) {
         marker.setMap(_this3.map);
       });
+      this.updateCluster();
       this.fitBounds();
-      this.updateCluster(this.markers);
     }
   }, {
     key: "updateCluster",
-    value: function updateCluster(locations) {
+    value: function updateCluster() {
+      var locationsArray = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
+
       if (this.settings.cluster) {
         this.settings.cluster.clearMarkers();
         this.settings.cluster.addMarkers(locations);
