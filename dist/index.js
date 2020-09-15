@@ -111,6 +111,14 @@ var Controller = /*#__PURE__*/function () {
         }); // Add a click handler that opens the infoWindow - if it exists.
 
         marker.addListener('click', function () {
+          if (_this.info.length) {
+            _this.info.filter(function (item) {
+              return item !== _this.info[index];
+            }).forEach(function (infoWindow) {
+              return infoWindow.close();
+            });
+          }
+
           if (_this.info[index]) _this.info[index].open(_this.map, marker);
 
           _this.map.panTo(marker.position);
