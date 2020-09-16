@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "dependencies": {
     "@google/markerclustererplus": "^5.0.4",
-    "@meteora-digital/helpers": "^1.2.2"
+    "@meteora-digital/helpers": "latest"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",
