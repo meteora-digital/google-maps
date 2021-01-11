@@ -66,11 +66,11 @@ class Controller {
 			},
 		}, options);
 
-		// If we have a center value in the options, use that value, otherwise use the middle of all locations.
-		if (this.settings.map.center === undefined) this.settings.map.center = this.fitBounds();
-
 		// Create new 
 		this.map = new GoogleMaps.Map(this.el, this.settings.map);
+
+		// If we have a center value in the options, use that value, otherwise use the middle of all locations.
+		if (this.settings.map.center === undefined) this.fitBounds();
 
 		// Markers is a boolean, who knows, maybe we dont want any :)
 		if (this.settings.markers) this.addMarkers();
