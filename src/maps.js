@@ -67,7 +67,7 @@ class Controller {
 		}, options);
 
 		// If we have a center value in the options, use that value, otherwise use the middle of all locations.
-		if (this.settings.map.center === undefined) this.settings.map.center = this.findCenter();
+		if (this.settings.map.center === undefined) this.settings.map.center = this.fitBounds();
 
 		// Create new 
 		this.map = new GoogleMaps.Map(this.el, this.settings.map);
@@ -155,21 +155,6 @@ class Controller {
 			this.settings.cluster.addMarkers(locationsArray);
 		};
 	}
-
-  // This function simply finds the average lat and lng so we can place the user in the middle of each of them
-  findCenter(locationsArray = this.locations) {
-  	const center = {lat: 0, lng: 0};
-
-  	locationsArray.forEach((location) => {
-  		center.lat +=  location.position.lat;
-  		center.lng +=  location.position.lng;
-  	});
-
-  	return {
-  		lat: center.lat / locationsArray.length,
-  		lng: center.lng / locationsArray.length,
-  	};
-  }
 
 	// This function will make it easier to fit all markers in the map
 	fitBounds(markersArray = this.markers) {

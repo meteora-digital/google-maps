@@ -1,11 +1,22 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _markerclustererplusUmd = _interopRequireDefault(require("@google/markerclustererplus/dist/markerclustererplus.umd.js"));
+
+var _helpers = require("@meteora-digital/helpers");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-import Cluster from '@google/markerclustererplus/dist/markerclustererplus.umd.js';
-import { objectAssign } from '@meteora-digital/helpers';
 var GoogleMaps = {}; // A little function to load the API
 
 function load(key) {
@@ -28,7 +39,7 @@ function rad(x) {
 
 function render(func) {
   if (window.google) {
-    GoogleMaps = objectAssign(GoogleMaps, window.google.maps);
+    GoogleMaps = (0, _helpers.objectAssign)(GoogleMaps, window.google.maps);
     func();
   } else {
     setTimeout(function () {
@@ -57,7 +68,7 @@ var Controller = /*#__PURE__*/function () {
       scale: 1
     }; // Here are the defined default settings for the function
 
-    this.settings = objectAssign({
+    this.settings = (0, _helpers.objectAssign)({
       locations: [],
       markers: true,
       cluster: false,
@@ -73,7 +84,7 @@ var Controller = /*#__PURE__*/function () {
       }
     }, options); // If we have a center value in the options, use that value, otherwise use the middle of all locations.
 
-    if (this.settings.map.center === undefined) this.settings.map.center = this.findCenter(); // Create new 
+    if (this.settings.map.center === undefined) this.settings.map.center = this.fitBounds(); // Create new 
 
     this.map = new GoogleMaps.Map(this.el, this.settings.map); // Markers is a boolean, who knows, maybe we dont want any :)
 
@@ -91,7 +102,7 @@ var Controller = /*#__PURE__*/function () {
         if (location.icon) {
           if (typeof location.icon !== 'string') {
             if (location.icon.anchor) location.icon.anchor = new GoogleMaps.Point(location.icon.anchor[0], location.icon.anchor[1]);
-            location.icon = objectAssign({
+            location.icon = (0, _helpers.objectAssign)({
               path: 'M11.672 15.901c-2.734 0-4.952-2.174-4.952-4.857 0-2.682 2.218-4.859 4.952-4.859 2.735 0 4.953 2.177 4.953 4.86 0 2.682-2.218 4.856-4.953 4.856m0-15.9C5.453 0 .411 4.944.411 11.043c0 8.873 11.261 23.73 11.261 23.73s11.26-14.857 11.26-23.73c0-6.1-5.04-11.044-11.26-11.044',
               fillColor: '#ff3366',
               fillOpacity: 1,
@@ -134,7 +145,7 @@ var Controller = /*#__PURE__*/function () {
       } // this.settings.cluster is a boolean, but not for long
 
 
-      if (this.settings.cluster) this.settings.cluster = new Cluster(this.map, this.markers, this.settings.clusterSettings);
+      if (this.settings.cluster) this.settings.cluster = new _markerclustererplusUmd["default"](this.map, this.markers, this.settings.clusterSettings);
     }
   }, {
     key: "filterMarkers",
@@ -173,24 +184,6 @@ var Controller = /*#__PURE__*/function () {
       }
 
       ;
-    } // This function simply finds the average lat and lng so we can place the user in the middle of each of them
-
-  }, {
-    key: "findCenter",
-    value: function findCenter() {
-      var locationsArray = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
-      var center = {
-        lat: 0,
-        lng: 0
-      };
-      locationsArray.forEach(function (location) {
-        center.lat += location.position.lat;
-        center.lng += location.position.lng;
-      });
-      return {
-        lat: center.lat / locationsArray.length,
-        lng: center.lng / locationsArray.length
-      };
     } // This function will make it easier to fit all markers in the map
 
   }, {
@@ -280,4 +273,7 @@ GoogleMaps.Load = function () {
     console.log('A GoogleMaps Controller must be called after GoogleMaps.Load and should be within the Render function');
   }
 };
-export default GoogleMaps = GoogleMaps;
+
+var _default = GoogleMaps = GoogleMaps;
+
+exports["default"] = _default;
