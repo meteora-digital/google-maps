@@ -11,11 +11,11 @@ const concat = require('gulp-concat');
 exports.default = function(done) {
   // This will grab any file within src/components or its
   // subdirectories, then ...
-  return src('./src/js/**/*.js')
+  return src('./src/**/*.js')
     // Stop the process if an error is thrown.
     .pipe(plumber())
     // Transpile the JS code using Babel's preset-env.
-    .pipe(concat('selector.js'))
+    .pipe(concat('maps.js'))
     .pipe(babel({
     	presets: [
     	['@babel/env', {
@@ -24,6 +24,6 @@ exports.default = function(done) {
     	]
     }))
     // Save each component as a separate file in dist.
-    .pipe(dest('./dist/js'))
+    .pipe(dest('./dist'))
 };
 
