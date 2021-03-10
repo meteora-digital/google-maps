@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _markerclustererplusUmd = _interopRequireDefault(require("@google/markerclustererplus/dist/markerclustererplus.umd.js"));
+var _markerclustererplus = _interopRequireDefault(require("@googlemaps/markerclustererplus"));
 
 var _helpers = require("@meteora-digital/helpers");
 
@@ -145,7 +145,7 @@ var Controller = /*#__PURE__*/function () {
       } // this.settings.cluster is a boolean, but not for long
 
 
-      if (this.settings.cluster) this.settings.cluster = new _markerclustererplusUmd["default"](this.map, this.markers, this.settings.clusterSettings);
+      if (this.settings.cluster) this.settings.cluster = new _markerclustererplus["default"](this.map, this.markers, this.settings.clusterSettings);
     }
   }, {
     key: "filterMarkers",

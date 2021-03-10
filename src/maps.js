@@ -1,4 +1,5 @@
-import Cluster from '@google/markerclustererplus/dist/markerclustererplus.umd.js';
+// import Cluster from '@googlemaps/markerclustererplus/dist/markerclustererplus.umd.js';
+import MarkerClusterer from '@googlemaps/markerclustererplus';
 import {objectAssign} from '@meteora-digital/helpers';
 
 let GoogleMaps = {};
@@ -123,7 +124,7 @@ class Controller {
 		}
 
 		// this.settings.cluster is a boolean, but not for long
-		if (this.settings.cluster) this.settings.cluster = new Cluster(this.map, this.markers, this.settings.clusterSettings);
+		if (this.settings.cluster) this.settings.cluster = new MarkerClusterer(this.map, this.markers, this.settings.clusterSettings);
 	}
 
 	filterMarkers(locationsArray = this.locations) {
