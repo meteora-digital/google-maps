@@ -118,7 +118,7 @@ var Controller = /*#__PURE__*/function () {
           id: index,
           map: _this.map,
           position: location.position,
-          icon: location.icon || _this.iconDefaults
+          icon: location.icon || _this.settings.icon
         }); // Add a click handler that opens the infoWindow - if it exists.
 
         marker.addListener('click', function () {
