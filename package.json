@@ -5,7 +5,7 @@
   "main": "dist/maps.js",
   "dependencies": {
     "@googlemaps/markerclustererplus": "^1.0.3",
-    "@meteora-digital/helpers": "latest"
+    "meteora": "latest"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",

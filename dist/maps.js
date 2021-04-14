@@ -7,7 +7,7 @@ exports["default"] = void 0;
 
 var _markerclustererplus = _interopRequireDefault(require("@googlemaps/markerclustererplus"));
 
-var _helpers = require("@meteora-digital/helpers");
+var _meteora = require("meteora");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -39,7 +39,7 @@ function rad(x) {
 
 function render(func) {
   if (window.google) {
-    GoogleMaps = (0, _helpers.objectAssign)(GoogleMaps, window.google.maps);
+    GoogleMaps = (0, _meteora.objectAssign)(GoogleMaps, window.google.maps);
     func();
   } else {
     setTimeout(function () {
@@ -68,21 +68,22 @@ var Controller = /*#__PURE__*/function () {
       scale: 1
     }; // Here are the defined default settings for the function
 
-    this.settings = (0, _helpers.objectAssign)({
+    this.settings = (0, _meteora.objectAssign)({
       locations: [],
       markers: true,
       cluster: false,
       clusterSettings: {
         imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
       },
-      icon: this.iconDefaults,
       map: {
         disableDefaultUI: false,
         scrollwheel: false,
         zoomControl: true,
         zoom: 10
       }
-    }, options); // Create new 
+    }, options); // Make sure we have a default icon
+
+    this.settings.icon = options.icon || this.iconDefaults; // Create new 
 
     this.map = new GoogleMaps.Map(this.el, this.settings.map); // If we have a center value in the options, use that value, otherwise use the middle of all locations.
 
@@ -102,7 +103,7 @@ var Controller = /*#__PURE__*/function () {
         if (location.icon) {
           if (typeof location.icon !== 'string') {
             if (location.icon.anchor) location.icon.anchor = new GoogleMaps.Point(location.icon.anchor[0], location.icon.anchor[1]);
-            location.icon = (0, _helpers.objectAssign)({
+            location.icon = (0, _meteora.objectAssign)({
               path: 'M11.672 15.901c-2.734 0-4.952-2.174-4.952-4.857 0-2.682 2.218-4.859 4.952-4.859 2.735 0 4.953 2.177 4.953 4.86 0 2.682-2.218 4.856-4.953 4.856m0-15.9C5.453 0 .411 4.944.411 11.043c0 8.873 11.261 23.73 11.261 23.73s11.26-14.857 11.26-23.73c0-6.1-5.04-11.044-11.26-11.044',
               fillColor: '#ff3366',
               fillOpacity: 1,

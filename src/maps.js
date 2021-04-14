@@ -1,6 +1,6 @@
 // import Cluster from '@googlemaps/markerclustererplus/dist/markerclustererplus.umd.js';
 import MarkerClusterer from '@googlemaps/markerclustererplus';
-import {objectAssign} from '@meteora-digital/helpers';
+import { objectAssign } from 'meteora';
 
 let GoogleMaps = {};
 
@@ -58,7 +58,6 @@ class Controller {
       clusterSettings: {
         imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
       },
-      icon: this.iconDefaults,
       map: {
         disableDefaultUI: false,
         scrollwheel: false,
@@ -66,6 +65,9 @@ class Controller {
         zoom: 10,
       },
     }, options);
+
+    // Make sure we have a default icon
+    this.settings.icon = options.icon || this.iconDefaults;
 
     // Create new 
     this.map = new GoogleMaps.Map(this.el, this.settings.map);
