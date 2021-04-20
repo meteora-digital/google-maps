@@ -144,20 +144,18 @@ var Controller = /*#__PURE__*/function () {
       var _this2 = this;
 
       var locationsArray = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
-      var visibleMarkers = [];
+      var visible = [];
+      var current = [];
       locationsArray.forEach(function (location) {
-        _this2.markers.forEach(function (marker) {
-          if (location.position.lat === marker.position.lat() && location.position.lng === marker.position.lng()) {
-            marker.setMap(_this2.map);
-            visibleMarkers.push(marker);
-          } else {
-            marker.setMap(null);
-          }
+        current = _this2.markers.filter(function (marker) {
+          return marker.position.lat() == location.position.lat && marker.position.lng() == location.position.lng;
         });
-      }); // Center the map
-
-      this.updateCluster(visibleMarkers);
-      this.fitBounds(visibleMarkers);
+        current.forEach(function (marker) {
+          return visible.push(marker);
+        });
+      });
+      this.updateCluster(visible);
+      this.fitBounds(visible);
     }
   }, {
     key: "showAllMarkers",

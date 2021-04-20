@@ -118,22 +118,16 @@ class Controller {
   }
 
   filterMarkers(locationsArray = this.locations) {
-    let visibleMarkers = [];
+    const visible = [];
+    let current = [];
 
     locationsArray.forEach((location) => {
-      this.markers.forEach((marker) => {
-        if (location.position.lat === marker.position.lat() && location.position.lng === marker.position.lng()) {
-          marker.setMap(this.map);
-          visibleMarkers.push(marker);
-        }else {
-          marker.setMap(null);
-        }
-      });
+      current = this.markers.filter((marker) => marker.position.lat() == location.position.lat && marker.position.lng() == location.position.lng);
+      current.forEach((marker) => visible.push(marker));
     });
 
-    // Center the map
-    this.updateCluster(visibleMarkers);
-    this.fitBounds(visibleMarkers);
+    this.updateCluster(visible);
+    this.fitBounds(visible);
   }
 
   showAllMarkers() {
