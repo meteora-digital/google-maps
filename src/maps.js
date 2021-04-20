@@ -1,4 +1,3 @@
-// import Cluster from '@googlemaps/markerclustererplus/dist/markerclustererplus.umd.js';
 import MarkerClusterer from '@googlemaps/markerclustererplus';
 import { objectAssign } from 'meteora';
 
@@ -117,41 +116,35 @@ class Controller {
     if (this.settings.cluster) this.settings.cluster = new MarkerClusterer(this.map, this.markers, this.settings.clusterSettings);
   }
 
-  filterMarkers(locationsArray = this.locations) {
-    let visibleMarkers = [];
+  filterMarkers(locations = this.locations) {
+    const visible = [];
+    let current = [];
 
-    locationsArray.forEach((location) => {
-      this.markers.forEach((marker) => {
-        if (location.position.lat === marker.position.lat() && location.position.lng === marker.position.lng()) {
-          marker.setMap(this.map);
-          visibleMarkers.push(marker);
-        }else {
-          marker.setMap(null);
-        }
-      });
+    locations.forEach((location) => {
+      current = this.markers.filter((marker) => marker.position.lat() == location.position.lat && marker.position.lng() == location.position.lng);
+      current.forEach((marker) => visible.push(marker));
     });
 
-    // Center the map
-    this.updateCluster(visibleMarkers);
-    this.fitBounds(visibleMarkers);
+    this.updateCluster(visible);
+    this.fitBounds(visible);
   }
 
   showAllMarkers() {
     this.filterMarkers();
   }
 
-  updateCluster(locationsArray = this.markers) {
+  updateCluster(locations = this.markers) {
     if (this.settings.cluster) {
       this.settings.cluster.clearMarkers();
-      this.settings.cluster.addMarkers(locationsArray);
+      this.settings.cluster.addMarkers(locations);
     };
   }
 
   // This function will make it easier to fit all markers in the map
-  fitBounds(markersArray = this.markers) {
+  fitBounds(markers = this.markers) {
     const bounds = new GoogleMaps.LatLngBounds();
 
-    markersArray.forEach((marker) => bounds.extend(marker.position));
+    markers.forEach((marker) => bounds.extend(marker.position));
 
     this.map.fitBounds(bounds);
   }
@@ -180,23 +173,25 @@ class Controller {
   }
 
   // This function takes an object with a lat and lng value and returns the closest marker from the map.markers array.
-  findClosestTo(position) {
+  findClosestTo(position, markers = this.markers) {
     if (position.lat && position.lng) {
-      let radius = 6371; // radius of earth in km
-      let distance = null;
       let closest = null;
+      const radius = 6371; // radius of earth in km
+      const calc = {};
+      const distance = {
+        smallest: null,
+        current: null
+      };
 
-      this.markers.forEach((marker) => {
-        let markerLat = marker.position.lat();
-        let markerLng = marker.position.lng();
-        let distanceLat = rad(markerLat - position.lat);
-        let distanceLng = rad(markerLng - position.lng);
-        let a = Math.sin(distanceLat/2) * Math.sin(distanceLat/2) + Math.cos(rad(position.lat)) * Math.cos(rad(position.lat)) * Math.sin(distanceLng/2) * Math.sin(distanceLng/2);
-        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        let d = radius * c;
+      markers.forEach((marker) => {
+        distance.lat = rad(marker.position.lat() - position.lat);
+        distance.lng = rad(marker.position.lng() - position.lng);
+        calc.a = Math.sin(distance.lat/2) * Math.sin(distance.lat/2) + Math.cos(rad(position.lat)) * Math.cos(rad(position.lat)) * Math.sin(distance.lng/2) * Math.sin(distance.lng/2);
+        calc.c = 2 * Math.atan2(Math.sqrt(calc.a), Math.sqrt(1-calc.a));
+        distance.current = radius * calc.c;
 
-        if (distance == null || d < distance) {
-          distance = d;
+        if (distance.smallest == null || distance.current < distance.smallest) {
+          distance.smallest = distance.current;
           closest = marker;
         };
       });

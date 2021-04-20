@@ -143,21 +143,19 @@ var Controller = /*#__PURE__*/function () {
     value: function filterMarkers() {
       var _this2 = this;
 
-      var locationsArray = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
-      var visibleMarkers = [];
-      locationsArray.forEach(function (location) {
-        _this2.markers.forEach(function (marker) {
-          if (location.position.lat === marker.position.lat() && location.position.lng === marker.position.lng()) {
-            marker.setMap(_this2.map);
-            visibleMarkers.push(marker);
-          } else {
-            marker.setMap(null);
-          }
+      var locations = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
+      var visible = [];
+      var current = [];
+      locations.forEach(function (location) {
+        current = _this2.markers.filter(function (marker) {
+          return marker.position.lat() == location.position.lat && marker.position.lng() == location.position.lng;
         });
-      }); // Center the map
-
-      this.updateCluster(visibleMarkers);
-      this.fitBounds(visibleMarkers);
+        current.forEach(function (marker) {
+          return visible.push(marker);
+        });
+      });
+      this.updateCluster(visible);
+      this.fitBounds(visible);
     }
   }, {
     key: "showAllMarkers",
@@ -167,11 +165,11 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "updateCluster",
     value: function updateCluster() {
-      var locationsArray = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.markers;
+      var locations = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.markers;
 
       if (this.settings.cluster) {
         this.settings.cluster.clearMarkers();
-        this.settings.cluster.addMarkers(locationsArray);
+        this.settings.cluster.addMarkers(locations);
       }
 
       ;
@@ -180,9 +178,9 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "fitBounds",
     value: function fitBounds() {
-      var markersArray = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.markers;
+      var markers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.markers;
       var bounds = new GoogleMaps.LatLngBounds();
-      markersArray.forEach(function (marker) {
+      markers.forEach(function (marker) {
         return bounds.extend(marker.position);
       });
       this.map.fitBounds(bounds);
@@ -218,22 +216,26 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "findClosestTo",
     value: function findClosestTo(position) {
+      var markers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.markers;
+
       if (position.lat && position.lng) {
+        var closest = null;
         var radius = 6371; // radius of earth in km
 
-        var distance = null;
-        var closest = null;
-        this.markers.forEach(function (marker) {
-          var markerLat = marker.position.lat();
-          var markerLng = marker.position.lng();
-          var distanceLat = rad(markerLat - position.lat);
-          var distanceLng = rad(markerLng - position.lng);
-          var a = Math.sin(distanceLat / 2) * Math.sin(distanceLat / 2) + Math.cos(rad(position.lat)) * Math.cos(rad(position.lat)) * Math.sin(distanceLng / 2) * Math.sin(distanceLng / 2);
-          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-          var d = radius * c;
+        var calc = {};
+        var distance = {
+          smallest: null,
+          current: null
+        };
+        markers.forEach(function (marker) {
+          distance.lat = rad(marker.position.lat() - position.lat);
+          distance.lng = rad(marker.position.lng() - position.lng);
+          calc.a = Math.sin(distance.lat / 2) * Math.sin(distance.lat / 2) + Math.cos(rad(position.lat)) * Math.cos(rad(position.lat)) * Math.sin(distance.lng / 2) * Math.sin(distance.lng / 2);
+          calc.c = 2 * Math.atan2(Math.sqrt(calc.a), Math.sqrt(1 - calc.a));
+          distance.current = radius * calc.c;
 
-          if (distance == null || d < distance) {
-            distance = d;
+          if (distance.smallest == null || distance.current < distance.smallest) {
+            distance.smallest = distance.current;
             closest = marker;
           }
 
