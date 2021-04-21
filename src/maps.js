@@ -120,10 +120,14 @@ class Controller {
     const visible = [];
     let current = [];
 
+    this.markers.forEach((marker) => marker.setMap(null));
+
     locations.forEach((location) => {
       current = this.markers.filter((marker) => marker.position.lat() == location.position.lat && marker.position.lng() == location.position.lng);
       current.forEach((marker) => visible.push(marker));
     });
+
+    visible.forEach((marker) => marker.setMap(this.map));
 
     this.updateCluster(visible);
     this.fitBounds(visible);
@@ -249,9 +253,8 @@ class Controller {
       });
 
       // Next return our filtered locations
-      return (locations.length) ? locations : false;
+      return (locations.length) ? locations : [];
     }
-
     // If there was never anything to filter then return everything
     return this.locations;
   }

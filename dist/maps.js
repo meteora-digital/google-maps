@@ -146,6 +146,9 @@ var Controller = /*#__PURE__*/function () {
       var locations = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
       var visible = [];
       var current = [];
+      this.markers.forEach(function (marker) {
+        return marker.setMap(null);
+      });
       locations.forEach(function (location) {
         current = _this2.markers.filter(function (marker) {
           return marker.position.lat() == location.position.lat && marker.position.lng() == location.position.lng;
@@ -153,6 +156,9 @@ var Controller = /*#__PURE__*/function () {
         current.forEach(function (marker) {
           return visible.push(marker);
         });
+      });
+      visible.forEach(function (marker) {
+        return marker.setMap(_this2.map);
       });
       this.updateCluster(visible);
       this.fitBounds(visible);
@@ -296,7 +302,7 @@ var Controller = /*#__PURE__*/function () {
           if (include) locations.push(location);
         }); // Next return our filtered locations
 
-        return locations.length ? locations : false;
+        return locations.length ? locations : [];
       } // If there was never anything to filter then return everything
 
 
