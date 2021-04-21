@@ -168,10 +168,18 @@ map.withUserLocation((location) => {
 ```findClosestTo```
 
 A shorthand function to find the closest marker to a lat / lng object coordinates.
-Returns the closest marker. 
+Returns the closest marker. By passing in an array of locations, you can find the closest out of the specified locations!
 
 ```javascript
-  map.findClosestTo(position);
+  map.findClosestTo(position, locationArray);
+```
+
+```search```
+
+A shorthand function to filter the locations based on values in a filters object. The object key/values should match the structure of the locations. Passing {id: 10} will return the location with id = 10 (if this is a key/value).
+
+```javascript
+  map.search({id: 10});
 ```
 
 ## License
