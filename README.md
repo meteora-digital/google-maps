@@ -1,4 +1,4 @@
-# Google Maps Extension
+# 🗺️ Google Maps Extension
 
 Add this to your project
 
