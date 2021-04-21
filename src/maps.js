@@ -172,8 +172,8 @@ class Controller {
     }
   }
 
-  // This function takes an object with a lat and lng value and returns the closest marker from the map.markers array.
-  findClosestTo(position, markers = this.markers) {
+  // This function takes an object with a lat and lng value and returns the closest marker from the map.locations array.
+  findClosestTo(position, locations = this.locations) {
     if (position.lat && position.lng) {
       let closest = null;
       const radius = 6371; // radius of earth in km
@@ -183,16 +183,16 @@ class Controller {
         current: null
       };
 
-      markers.forEach((marker) => {
-        distance.lat = rad(marker.position.lat() - position.lat);
-        distance.lng = rad(marker.position.lng() - position.lng);
+      locations.forEach((location) => {
+        distance.lat = rad(location.position.lat - position.lat);
+        distance.lng = rad(location.position.lng - position.lng);
         calc.a = Math.sin(distance.lat/2) * Math.sin(distance.lat/2) + Math.cos(rad(position.lat)) * Math.cos(rad(position.lat)) * Math.sin(distance.lng/2) * Math.sin(distance.lng/2);
         calc.c = 2 * Math.atan2(Math.sqrt(calc.a), Math.sqrt(1-calc.a));
         distance.current = radius * calc.c;
 
         if (distance.smallest == null || distance.current < distance.smallest) {
           distance.smallest = distance.current;
-          closest = marker;
+          closest = location;
         };
       });
 
@@ -200,6 +200,60 @@ class Controller {
     }else {
       console.log('argument needs to be a lat / lng object');
     }
+  }
+
+  search(filter = {}) {
+    const locations = [];
+    let include = true;
+
+    const match = (key1, key2) => {
+      return (key1.toString().toLowerCase().indexOf(key2.toString().toLowerCase()) > -1);
+    }
+
+    // If we have any filters to look at
+    if (Object.keys(filter).length) {
+      // Loop each location
+      this.locations.forEach((location) => {
+        // Set this location up to be included
+        include = true;
+
+        // Loop through the filters
+        for (let key in filter) {
+          // If the location has data related to the filter
+          if (location[key]) {
+            // Check if the value is an array
+            if (Array.isArray(filter[key])) {
+              // Loop the filter value array
+              for (let i = 0; i < filter[key].length; i++) {
+                // If the value doesn't match anything from the location data then dont include it and exit the loop
+                // If the data doesnt match, dont include it and exit the loop
+                if (!match(location[key], filter[key][i])) {
+                  include = false;
+                  break;
+                };
+              }
+            }else {
+              // If it isnt an array, check that it is in the location data and exit the loop
+              if (!match(location[key], filter[key])) include = false;
+              break;
+            }
+          }else {
+            // If the location doesnt have any data that matches the filter dont include it and exit the loop
+            include = false;
+            break;
+          }
+        }
+
+        // If our location made it to here, then we include it!
+        if (include) locations.push(location);
+      });
+
+      // Next return our filtered locations
+      return (locations.length) ? locations : false;
+    }
+
+    // If there was never anything to filter then return everything
+    return this.locations;
   }
 }
 

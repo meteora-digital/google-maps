@@ -211,12 +211,12 @@ var Controller = /*#__PURE__*/function () {
       } else {
         return false;
       }
-    } // This function takes an object with a lat and lng value and returns the closest marker from the map.markers array.
+    } // This function takes an object with a lat and lng value and returns the closest marker from the map.locations array.
 
   }, {
     key: "findClosestTo",
     value: function findClosestTo(position) {
-      var markers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.markers;
+      var locations = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.locations;
 
       if (position.lat && position.lng) {
         var closest = null;
@@ -227,16 +227,16 @@ var Controller = /*#__PURE__*/function () {
           smallest: null,
           current: null
         };
-        markers.forEach(function (marker) {
-          distance.lat = rad(marker.position.lat() - position.lat);
-          distance.lng = rad(marker.position.lng() - position.lng);
+        locations.forEach(function (location) {
+          distance.lat = rad(location.position.lat - position.lat);
+          distance.lng = rad(location.position.lng - position.lng);
           calc.a = Math.sin(distance.lat / 2) * Math.sin(distance.lat / 2) + Math.cos(rad(position.lat)) * Math.cos(rad(position.lat)) * Math.sin(distance.lng / 2) * Math.sin(distance.lng / 2);
           calc.c = 2 * Math.atan2(Math.sqrt(calc.a), Math.sqrt(1 - calc.a));
           distance.current = radius * calc.c;
 
           if (distance.smallest == null || distance.current < distance.smallest) {
             distance.smallest = distance.current;
-            closest = marker;
+            closest = location;
           }
 
           ;
@@ -245,6 +245,62 @@ var Controller = /*#__PURE__*/function () {
       } else {
         console.log('argument needs to be a lat / lng object');
       }
+    }
+  }, {
+    key: "search",
+    value: function search() {
+      var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var locations = [];
+      var include = true;
+
+      var match = function match(key1, key2) {
+        return key1.toString().toLowerCase().indexOf(key2.toString().toLowerCase()) > -1;
+      }; // If we have any filters to look at
+
+
+      if (Object.keys(filter).length) {
+        // Loop each location
+        this.locations.forEach(function (location) {
+          // Set this location up to be included
+          include = true; // Loop through the filters
+
+          for (var key in filter) {
+            // If the location has data related to the filter
+            if (location[key]) {
+              // Check if the value is an array
+              if (Array.isArray(filter[key])) {
+                // Loop the filter value array
+                for (var i = 0; i < filter[key].length; i++) {
+                  // If the value doesn't match anything from the location data then dont include it and exit the loop
+                  // If the data doesnt match, dont include it and exit the loop
+                  if (!match(location[key], filter[key][i])) {
+                    include = false;
+                    break;
+                  }
+
+                  ;
+                }
+              } else {
+                // If it isnt an array, check that it is in the location data and exit the loop
+                if (!match(location[key], filter[key])) include = false;
+                break;
+              }
+            } else {
+              // If the location doesnt have any data that matches the filter dont include it and exit the loop
+              include = false;
+              break;
+            }
+          } // If our location made it to here, then we include it!
+
+
+          if (include) locations.push(location);
+        }); // Next return our filtered locations
+
+        return locations.length ? locations : false;
+      } // If there was never anything to filter then return everything
+
+
+      return this.locations;
     }
   }]);
 
