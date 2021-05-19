@@ -1,5 +1,5 @@
 import MarkerClusterer from '@googlemaps/markerclustererplus';
-import { objectAssign } from 'meteora';
+import { nodeArray, objectAssign } from 'meteora';
 
 let GoogleMaps = {};
 
@@ -35,8 +35,7 @@ function render(func) {
 class Controller {
   constructor(el, options = {}) {
     this.el = el;
-    this.locations = options.locations;
-    this.markers = [];
+    this.locations = [];
     this.info = [];
 
     // Here are the defined default settings for the function
@@ -66,43 +65,50 @@ class Controller {
     // Create new 
     this.map = new GoogleMaps.Map(this.el, this.settings.map);
 
-    // If we have a center value in the options, use that value, otherwise use the middle of all locations.
-    if (this.settings.map.center === undefined) this.fitBounds();
-
     // Markers is a boolean, who knows, maybe we dont want any :)
-    if (this.settings.markers) this.addMarkers();
+    if (this.settings.markers) {
+      options.locations.forEach((location) => this.locations.push({ data: location }));
+
+      // Add the markers to the map
+      this.addMarkers();
+    };
   }
 
   addMarkers() {
     this.locations.forEach((location, index) => {
       // Here we are testing is the users has assigned a specifc icon for a location
       // For icon.anchor we want the user to insert an array [12, 36] rather than new GoogleMaps.Point(12,36);
-      if (location.icon) {
-        if (typeof location.icon !== 'string') {
-          if (location.icon.anchor) location.icon.anchor = new GoogleMaps.Point(location.icon.anchor[0], location.icon.anchor[1]);
-          location.icon = objectAssign(this.settings.icon, location.icon);
+      if (location.data.icon) {
+        if (typeof location.data.icon !== 'string') {
+          if (location.data.icon.anchor) location.data.icon.anchor = new GoogleMaps.Point(location.data.icon.anchor[0], location.data.icon.anchor[1]);
+          location.data.icon = objectAssign(this.settings.icon, location.data.icon);
         }
       }
 
       // We now set up the marker for each location
-      let marker = new GoogleMaps.Marker({
+      location.marker = new GoogleMaps.Marker({
         id: index,
         map: this.map,
-        position: location.position,
-        icon: location.icon || this.settings.icon,
+        position: location.data.position,
+        icon: location.data.icon || this.settings.icon,
       });
 
       // Add a click handler that opens the infoWindow - if it exists.
-      marker.addListener('click', () => {
-        if (this.info.length) {
-          this.info.filter((item) => item !== this.info[index]).forEach((infoWindow) => infoWindow.close());
-        }
-        if (this.info[index]) this.info[index].open(this.map, marker);
-        this.map.panTo(marker.position);
+      location.marker.addListener('click', () => {
+        // Pan to the marker position
+        this.map.panTo(location.marker.position);
+
+        // loop the other items and close the info windows
+        this.locations.filter((item) => item != location).forEach((item) => {
+          if (item.info != undefined) item.info.close();
+        });
+
+        // Open this info window
+        if (location.info != undefined) location.info.open();
       });
 
-      // We store these markers in an array for filtering later on.
-      this.markers.push(marker);
+      // We store these markers in an array for later on.
+      // this.markers.push(location.marker);
     });
 
     // If we wanna style the cluster icons but cbf writing the image url 5 times, we can inherit it like this :)
@@ -113,52 +119,62 @@ class Controller {
     }
 
     // this.settings.cluster is a boolean, but not for long
-    if (this.settings.cluster) this.settings.cluster = new MarkerClusterer(this.map, this.markers, this.settings.clusterSettings);
+    if (this.settings.cluster) {
+      // Create an empty array to hold the markers
+      const markers = [];
+      // Put all the locations markers in the array
+      this.locations.forEach((location) => markers.push(location.marker));
+      // Add marker clustering
+      this.settings.cluster = new MarkerClusterer(this.map, markers, this.settings.clusterSettings)
+    };
   }
 
   filterMarkers(locations = this.locations) {
-    const visible = [];
-    let current = [];
-
-    this.markers.forEach((marker) => marker.setMap(null));
-
-    locations.forEach((location) => {
-      current = this.markers.filter((marker) => marker.position.lat() == location.position.lat && marker.position.lng() == location.position.lng);
-      current.forEach((marker) => visible.push(marker));
+    this.locations.forEach((location) => {
+      location.marker.setMap((locations.indexOf(location) > -1) ? this.map : null);
     });
 
-    visible.forEach((marker) => marker.setMap(this.map));
-
-    this.updateCluster(visible);
-    this.fitBounds(visible);
+    this.updateCluster(locations);
+    this.fitBounds(locations);
   }
 
   showAllMarkers() {
     this.filterMarkers();
   }
 
-  updateCluster(locations = this.markers) {
+  updateCluster(locations = this.locations) {
+    // an empty array to store the markers
+    let markers = [];
+
+    // If we have clustering set up
     if (this.settings.cluster) {
+      // Clear all the clusters
       this.settings.cluster.clearMarkers();
-      this.settings.cluster.addMarkers(locations);
+      // For each locations add the location.marker to the new markers array
+      locations.forEach((location) => markers.push(location.marker));
+      // Add markers to the cluster settings
+      this.settings.cluster.addMarkers(markers);
     };
   }
 
   // This function will make it easier to fit all markers in the map
-  fitBounds(markers = this.markers) {
-    const bounds = new GoogleMaps.LatLngBounds();
-
-    markers.forEach((marker) => bounds.extend(marker.position));
-
-    this.map.fitBounds(bounds);
+  fitBounds(locations = this.locations) {
+    // Create a new GoogleMaps.LatLngBounds() object
+    const boundary = new GoogleMaps.LatLngBounds();
+    // Add each location position to the boundary
+    locations.forEach((location) => {
+      boundary.extend(location.data.position);
+    });
+    // Tell the map to zoom to the boundary
+    this.map.fitBounds(boundary);
   }
 
   // This function will be used to insert a template for the infoWindows
   infoTemplate(func) {
     this.locations.forEach((location) => {
-      this.info.push(new GoogleMaps.InfoWindow({
-        content: func(location),
-      }));
+      location.info = new GoogleMaps.InfoWindow({
+        content: func(location.data),
+      });
     });
   }
 
@@ -188,8 +204,8 @@ class Controller {
       };
 
       locations.forEach((location) => {
-        distance.lat = rad(location.position.lat - position.lat);
-        distance.lng = rad(location.position.lng - position.lng);
+        distance.lat = rad(location.data.position.lat - position.lat);
+        distance.lng = rad(location.data.position.lng - position.lng);
         calc.a = Math.sin(distance.lat/2) * Math.sin(distance.lat/2) + Math.cos(rad(position.lat)) * Math.cos(rad(position.lat)) * Math.sin(distance.lng/2) * Math.sin(distance.lng/2);
         calc.c = 2 * Math.atan2(Math.sqrt(calc.a), Math.sqrt(1-calc.a));
         distance.current = radius * calc.c;
@@ -224,21 +240,21 @@ class Controller {
         // Loop through the filters
         for (let key in filter) {
           // If the location has data related to the filter
-          if (location[key]) {
+          if (location.data[key]) {
             // Check if the value is an array
             if (Array.isArray(filter[key])) {
               // Loop the filter value array
               for (let i = 0; i < filter[key].length; i++) {
                 // If the value doesn't match anything from the location data then dont include it and exit the loop
                 // If the data doesnt match, dont include it and exit the loop
-                if (!match(location[key], filter[key][i])) {
+                if (!match(location.data[key], filter[key][i])) {
                   include = false;
                   break;
                 };
               }
             }else {
               // If it isnt an array, check that it is in the location data and exit the loop
-              if (!match(location[key], filter[key])) include = false;
+              if (!match(location.data[key], filter[key])) include = false;
               break;
             }
           }else {
