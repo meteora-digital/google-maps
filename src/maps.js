@@ -104,7 +104,7 @@ class Controller {
         });
 
         // Open this info window
-        if (location.info != undefined) location.info.open();
+        if (location.info != undefined) location.info.open(this.map, location.marker);
       });
 
       // We store these markers in an array for later on.

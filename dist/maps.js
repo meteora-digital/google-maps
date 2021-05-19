@@ -133,7 +133,7 @@ var Controller = /*#__PURE__*/function () {
           }); // Open this info window
 
 
-          if (location.info != undefined) location.info.open();
+          if (location.info != undefined) location.info.open(_this2.map, location.marker);
         }); // We store these markers in an array for later on.
         // this.markers.push(location.marker);
       }); // If we wanna style the cluster icons but cbf writing the image url 5 times, we can inherit it like this :)
@@ -165,7 +165,7 @@ var Controller = /*#__PURE__*/function () {
 
       var locations = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
       this.locations.forEach(function (location) {
-        if (location.marker) location.marker.setMap(locations.indexOf(location) > -1 ? _this3.map : null);
+        location.marker.setMap(locations.indexOf(location) > -1 ? _this3.map : null);
       });
       this.updateCluster(locations);
       this.fitBounds(locations);
@@ -204,7 +204,6 @@ var Controller = /*#__PURE__*/function () {
       var boundary = new GoogleMaps.LatLngBounds(); // Add each location position to the boundary
 
       locations.forEach(function (location) {
-        console.log(location);
         boundary.extend(location.data.position);
       }); // Tell the map to zoom to the boundary
 
