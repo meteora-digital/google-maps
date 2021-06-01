@@ -24,7 +24,7 @@ function rad(x) {
 
 // The render function will wait for google maps to load before firing. 
 function render(func) {
-  if (window.google) {
+  if (window.google && window.google.maps) {
     GoogleMaps = objectAssign(GoogleMaps, window.google.maps);
     func();
   }else {

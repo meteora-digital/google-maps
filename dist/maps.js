@@ -38,7 +38,7 @@ function rad(x) {
 
 
 function render(func) {
-  if (window.google) {
+  if (window.google && window.google.maps) {
     GoogleMaps = (0, _meteora.objectAssign)(GoogleMaps, window.google.maps);
     func();
   } else {
