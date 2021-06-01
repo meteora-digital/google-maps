@@ -50,13 +50,14 @@ function render(func) {
 
 var Controller = /*#__PURE__*/function () {
   function Controller(el) {
+    var _this = this;
+
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     _classCallCheck(this, Controller);
 
     this.el = el;
-    this.locations = options.locations;
-    this.markers = [];
+    this.locations = [];
     this.info = []; // Here are the defined default settings for the function
 
     this.settings = (0, _meteora.objectAssign)({
@@ -82,86 +83,92 @@ var Controller = /*#__PURE__*/function () {
       }
     }, options); // Create new 
 
-    this.map = new GoogleMaps.Map(this.el, this.settings.map); // If we have a center value in the options, use that value, otherwise use the middle of all locations.
+    this.map = new GoogleMaps.Map(this.el, this.settings.map); // Markers is a boolean, who knows, maybe we dont want any :)
 
-    if (this.settings.map.center === undefined) this.fitBounds(); // Markers is a boolean, who knows, maybe we dont want any :)
+    if (this.settings.markers) {
+      options.locations.forEach(function (location) {
+        return _this.locations.push({
+          data: location
+        });
+      }); // Add the markers to the map
 
-    if (this.settings.markers) this.addMarkers();
+      this.addMarkers();
+    }
+
+    ;
   }
 
   _createClass(Controller, [{
     key: "addMarkers",
     value: function addMarkers() {
-      var _this = this;
+      var _this2 = this;
 
       this.locations.forEach(function (location, index) {
         // Here we are testing is the users has assigned a specifc icon for a location
         // For icon.anchor we want the user to insert an array [12, 36] rather than new GoogleMaps.Point(12,36);
-        if (location.icon) {
-          if (typeof location.icon !== 'string') {
-            if (location.icon.anchor) location.icon.anchor = new GoogleMaps.Point(location.icon.anchor[0], location.icon.anchor[1]);
-            location.icon = (0, _meteora.objectAssign)(_this.settings.icon, location.icon);
+        if (location.data.icon) {
+          if (typeof location.data.icon !== 'string') {
+            if (location.data.icon.anchor) location.data.icon.anchor = new GoogleMaps.Point(location.data.icon.anchor[0], location.data.icon.anchor[1]);
+            location.data.icon = (0, _meteora.objectAssign)(_this2.settings.icon, location.data.icon);
           }
         } // We now set up the marker for each location
 
 
-        var marker = new GoogleMaps.Marker({
+        location.marker = new GoogleMaps.Marker({
           id: index,
-          map: _this.map,
-          position: location.position,
-          icon: location.icon || _this.settings.icon
+          map: _this2.map,
+          position: location.data.position,
+          icon: location.data.icon || _this2.settings.icon
         }); // Add a click handler that opens the infoWindow - if it exists.
 
-        marker.addListener('click', function () {
-          if (_this.info.length) {
-            _this.info.filter(function (item) {
-              return item !== _this.info[index];
-            }).forEach(function (infoWindow) {
-              return infoWindow.close();
-            });
-          }
+        location.marker.addListener('click', function () {
+          // Pan to the marker position
+          _this2.map.panTo(location.marker.position); // loop the other items and close the info windows
 
-          if (_this.info[index]) _this.info[index].open(_this.map, marker);
 
-          _this.map.panTo(marker.position);
-        }); // We store these markers in an array for filtering later on.
+          _this2.locations.filter(function (item) {
+            return item != location;
+          }).forEach(function (item) {
+            if (item.info != undefined) item.info.close();
+          }); // Open this info window
 
-        _this.markers.push(marker);
+
+          if (location.info != undefined) location.info.open(_this2.map, location.marker);
+        }); // We store these markers in an array for later on.
+        // this.markers.push(location.marker);
       }); // If we wanna style the cluster icons but cbf writing the image url 5 times, we can inherit it like this :)
 
       if (this.settings.clusterSettings.styles !== undefined) {
         this.settings.clusterSettings.styles.forEach(function (item, i) {
-          if (item.url === undefined) item.url = "".concat(_this.settings.clusterSettings.imagePath + (i + 1), ".png");
+          if (item.url === undefined) item.url = "".concat(_this2.settings.clusterSettings.imagePath + (i + 1), ".png");
         });
       } // this.settings.cluster is a boolean, but not for long
 
 
-      if (this.settings.cluster) this.settings.cluster = new _markerclustererplus["default"](this.map, this.markers, this.settings.clusterSettings);
+      if (this.settings.cluster) {
+        // Create an empty array to hold the markers
+        var markers = []; // Put all the locations markers in the array
+
+        this.locations.forEach(function (location) {
+          return markers.push(location.marker);
+        }); // Add marker clustering
+
+        this.settings.cluster = new _markerclustererplus["default"](this.map, markers, this.settings.clusterSettings);
+      }
+
+      ;
     }
   }, {
     key: "filterMarkers",
     value: function filterMarkers() {
-      var _this2 = this;
+      var _this3 = this;
 
       var locations = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
-      var visible = [];
-      var current = [];
-      this.markers.forEach(function (marker) {
-        return marker.setMap(null);
+      this.locations.forEach(function (location) {
+        location.marker.setMap(locations.indexOf(location) > -1 ? _this3.map : null);
       });
-      locations.forEach(function (location) {
-        current = _this2.markers.filter(function (marker) {
-          return marker.position.lat() == location.position.lat && marker.position.lng() == location.position.lng;
-        });
-        current.forEach(function (marker) {
-          return visible.push(marker);
-        });
-      });
-      visible.forEach(function (marker) {
-        return marker.setMap(_this2.map);
-      });
-      this.updateCluster(visible);
-      this.fitBounds(visible);
+      this.updateCluster(locations);
+      this.fitBounds(locations);
     }
   }, {
     key: "showAllMarkers",
@@ -171,11 +178,19 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "updateCluster",
     value: function updateCluster() {
-      var locations = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.markers;
+      var locations = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
+      // an empty array to store the markers
+      var markers = []; // If we have clustering set up
 
       if (this.settings.cluster) {
-        this.settings.cluster.clearMarkers();
-        this.settings.cluster.addMarkers(locations);
+        // Clear all the clusters
+        this.settings.cluster.clearMarkers(); // For each locations add the location.marker to the new markers array
+
+        locations.forEach(function (location) {
+          return markers.push(location.marker);
+        }); // Add markers to the cluster settings
+
+        this.settings.cluster.addMarkers(markers);
       }
 
       ;
@@ -184,23 +199,24 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "fitBounds",
     value: function fitBounds() {
-      var markers = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.markers;
-      var bounds = new GoogleMaps.LatLngBounds();
-      markers.forEach(function (marker) {
-        return bounds.extend(marker.position);
-      });
-      this.map.fitBounds(bounds);
+      var locations = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.locations;
+      // Create a new GoogleMaps.LatLngBounds() object
+      var boundary = new GoogleMaps.LatLngBounds(); // Add each location position to the boundary
+
+      locations.forEach(function (location) {
+        boundary.extend(location.data.position);
+      }); // Tell the map to zoom to the boundary
+
+      this.map.fitBounds(boundary);
     } // This function will be used to insert a template for the infoWindows
 
   }, {
     key: "infoTemplate",
     value: function infoTemplate(func) {
-      var _this3 = this;
-
       this.locations.forEach(function (location) {
-        _this3.info.push(new GoogleMaps.InfoWindow({
-          content: func(location)
-        }));
+        location.info = new GoogleMaps.InfoWindow({
+          content: func(location.data)
+        });
       });
     } // This function will get the user's geolocation, and then pass that into the function argument
 
@@ -234,8 +250,8 @@ var Controller = /*#__PURE__*/function () {
           current: null
         };
         locations.forEach(function (location) {
-          distance.lat = rad(location.position.lat - position.lat);
-          distance.lng = rad(location.position.lng - position.lng);
+          distance.lat = rad(location.data.position.lat - position.lat);
+          distance.lng = rad(location.data.position.lng - position.lng);
           calc.a = Math.sin(distance.lat / 2) * Math.sin(distance.lat / 2) + Math.cos(rad(position.lat)) * Math.cos(rad(position.lat)) * Math.sin(distance.lng / 2) * Math.sin(distance.lng / 2);
           calc.c = 2 * Math.atan2(Math.sqrt(calc.a), Math.sqrt(1 - calc.a));
           distance.current = radius * calc.c;
@@ -272,14 +288,14 @@ var Controller = /*#__PURE__*/function () {
 
           for (var key in filter) {
             // If the location has data related to the filter
-            if (location[key]) {
+            if (location.data[key]) {
               // Check if the value is an array
               if (Array.isArray(filter[key])) {
                 // Loop the filter value array
                 for (var i = 0; i < filter[key].length; i++) {
                   // If the value doesn't match anything from the location data then dont include it and exit the loop
                   // If the data doesnt match, dont include it and exit the loop
-                  if (!match(location[key], filter[key][i])) {
+                  if (!match(location.data[key], filter[key][i])) {
                     include = false;
                     break;
                   }
@@ -288,7 +304,7 @@ var Controller = /*#__PURE__*/function () {
                 }
               } else {
                 // If it isnt an array, check that it is in the location data and exit the loop
-                if (!match(location[key], filter[key])) include = false;
+                if (!match(location.data[key], filter[key])) include = false;
                 break;
               }
             } else {
