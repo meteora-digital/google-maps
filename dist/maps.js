@@ -38,7 +38,7 @@ function rad(x) {
 
 
 function render(func) {
-  if (window.google) {
+  if (window.google && window.google.maps) {
     // Extend the maps API
     for (var key in window.google.maps) {
       if (Object.hasOwnProperty.call(window.google.maps, key)) {

@@ -25,7 +25,7 @@ function rad(x) {
 
 // The render function will wait for google maps to load before firing. 
 function render(func) {
-  if (window.google) {
+  if (window.google && window.google.maps) {
     // Extend the maps API
     for (const key in window.google.maps) {
       if (Object.hasOwnProperty.call(window.google.maps, key)) {
