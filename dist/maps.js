@@ -7,8 +7,6 @@ exports["default"] = void 0;
 
 var _markerclustererplus = _interopRequireDefault(require("@googlemaps/markerclustererplus"));
 
-var _meteora = require("meteora");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -17,7 +15,9 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var GoogleMaps = {}; // A little function to load the API
+var GoogleMaps = {
+  Meteora: {}
+}; // A little function to load the API
 
 function load(key) {
   if (window.google === undefined && document.getElementById('GoogleMapsAPI') === null) {
@@ -38,8 +38,14 @@ function rad(x) {
 
 
 function render(func) {
-  if (window.google && window.google.maps) {
-    GoogleMaps = (0, _meteora.objectAssign)(GoogleMaps, window.google.maps);
+  if (window.google) {
+    // Extend the maps API
+    for (var key in window.google.maps) {
+      if (Object.hasOwnProperty.call(window.google.maps, key)) {
+        GoogleMaps[key] = window.google.maps[key];
+      }
+    }
+
     func();
   } else {
     setTimeout(function () {
@@ -60,7 +66,7 @@ var Controller = /*#__PURE__*/function () {
     this.locations = [];
     this.info = []; // Here are the defined default settings for the function
 
-    this.settings = (0, _meteora.objectAssign)({
+    this.settings = {
       locations: [],
       markers: true,
       cluster: false,
@@ -81,7 +87,14 @@ var Controller = /*#__PURE__*/function () {
         zoomControl: true,
         zoom: 10
       }
-    }, options); // Create new 
+    };
+
+    for (var key in options) {
+      if (Object.hasOwnProperty.call(options, key)) {
+        this.settings[key] = options[key];
+      }
+    } // Create new 
+
 
     this.map = new GoogleMaps.Map(this.el, this.settings.map); // Markers is a boolean, who knows, maybe we dont want any :)
 
@@ -109,7 +122,12 @@ var Controller = /*#__PURE__*/function () {
         if (location.data.icon) {
           if (typeof location.data.icon !== 'string') {
             if (location.data.icon.anchor) location.data.icon.anchor = new GoogleMaps.Point(location.data.icon.anchor[0], location.data.icon.anchor[1]);
-            location.data.icon = (0, _meteora.objectAssign)(_this2.settings.icon, location.data.icon);
+
+            for (var key in _this2.settings.icon) {
+              if (Object.hasOwnProperty.call(_this2.settings.icon, key)) {
+                location.data.icon[key] = _this2.settings.icon[key];
+              }
+            }
           }
         } // We now set up the marker for each location
 
@@ -329,13 +347,13 @@ var Controller = /*#__PURE__*/function () {
   return Controller;
 }();
 
-GoogleMaps.Load = function () {
+GoogleMaps.Meteora.Load = function () {
   var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
   return load(key);
-}, GoogleMaps.Render = function () {
+}, GoogleMaps.Meteora.Render = function () {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return render(options);
-}, GoogleMaps.Controller = function (el) {
+}, GoogleMaps.Meteora.Controller = function (el) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   if (window.google) {

@@ -1,7 +1,8 @@
 import MarkerClusterer from '@googlemaps/markerclustererplus';
-import { nodeArray, objectAssign } from 'meteora';
 
-let GoogleMaps = {};
+let GoogleMaps = {
+  Meteora: {},
+};
 
 // A little function to load the API
 function load(key) {
@@ -24,8 +25,14 @@ function rad(x) {
 
 // The render function will wait for google maps to load before firing. 
 function render(func) {
-  if (window.google && window.google.maps) {
-    GoogleMaps = objectAssign(GoogleMaps, window.google.maps);
+  if (window.google) {
+    // Extend the maps API
+    for (const key in window.google.maps) {
+      if (Object.hasOwnProperty.call(window.google.maps, key)) {
+        GoogleMaps[key] = window.google.maps[key];
+      }
+    }
+
     func();
   }else {
     setTimeout(() => render(func), 500);
@@ -39,7 +46,7 @@ class Controller {
     this.info = [];
 
     // Here are the defined default settings for the function
-    this.settings = objectAssign({
+    this.settings = {
       locations: [],
       markers: true,
       cluster: false,
@@ -60,7 +67,13 @@ class Controller {
         zoomControl: true,
         zoom: 10,
       },
-    }, options);
+    };
+
+    for (const key in options) {
+      if (Object.hasOwnProperty.call(options, key)) {
+        this.settings[key] = options[key];
+      }
+    }
 
     // Create new 
     this.map = new GoogleMaps.Map(this.el, this.settings.map);
@@ -81,7 +94,11 @@ class Controller {
       if (location.data.icon) {
         if (typeof location.data.icon !== 'string') {
           if (location.data.icon.anchor) location.data.icon.anchor = new GoogleMaps.Point(location.data.icon.anchor[0], location.data.icon.anchor[1]);
-          location.data.icon = objectAssign(this.settings.icon, location.data.icon);
+          for (const key in this.settings.icon) {
+            if (Object.hasOwnProperty.call(this.settings.icon, key)) {
+              location.data.icon[key] = this.settings.icon[key];
+            }
+          }
         }
       }
 
@@ -276,9 +293,9 @@ class Controller {
   }
 }
 
-GoogleMaps.Load = (key = '') => load(key),
-GoogleMaps.Render = (options = {}) => render(options),
-GoogleMaps.Controller = (el, options = {}) => {
+GoogleMaps.Meteora.Load = (key = '') => load(key),
+GoogleMaps.Meteora.Render = (options = {}) => render(options),
+GoogleMaps.Meteora.Controller = (el, options = {}) => {
   if (window.google) {
     return new Controller(el, options);
   }else {

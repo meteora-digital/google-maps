@@ -1,18 +1,21 @@
 # 🗺️ Google Maps Extension
 
-Add this to your project
+#### Add this to your project
 
 ```sh
-$ yarn add @meteora-digital/google-maps
+yarn add @meteora-digital/google-maps
 ```
 
-Import with webpack
+#### Import with webpack
 
 ```javascript
 import GoogleMaps from '@meteora-digital/google-maps';
 ```
 
-Our locations will be supplied as an array of data:
+###### Note: Breaking changes from version 2.1.0 <br> You will need to update your project to now target GoogleMaps.Meteora.Load() / GoogleMaps.Meteora.Render() / GoogleMaps.Meteora.Controller() <br> Map settings will now be completely defined by the user and defaults will not be merged like before. <br> If you're lazy, maybe stick to version 2.0.0 on older projects. <br> yarn add @meteora-digital/google-maps@2.0.0
+
+
+#### Our locations will be supplied as an array of data:
 
 ```javascript
 const locationArray = [
@@ -43,15 +46,15 @@ const locationArray = [
 # Loading the API
 
 ```javascript
-GoogleMaps.Load('YOUR_API_KEY');
+GoogleMaps.Meteora.Load('YOUR_API_KEY');
 ```
 
 Once we have called the load function, we can use the render function to create our new maps.
 - The render function waits for the google maps API to load before continuing.
 
 ```javascript
-GoogleMaps.Render(() => {
-	const map = GoogleMaps.Controller(document.querySelector('.js-map'), {
+GoogleMaps.Meteora.Render(() => {
+	const map = GoogleMaps.Meteora.Controller(document.querySelector('.js-map'), {
 		locations: locationArray,
 	});
 });
@@ -77,7 +80,7 @@ While applying styles to the clusterSettings, I have allowed the developer to de
 ```javascript
 
 clusterSettings: {
-	imagePath: '/themes/mercury/dist/images/maps/m',
+	imagePath: '/path/to/icons/m',
 	styles: [{
 		height: 90,
 		width: 90,
