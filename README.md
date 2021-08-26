@@ -12,7 +12,7 @@ yarn add @meteora-digital/google-maps
 import GoogleMaps from '@meteora-digital/google-maps';
 ```
 
-###### Note: Breaking changes from version 2.1.0 <br> You will need to update your project to now target GoogleMaps.Meteora.Load() / GoogleMaps.Meteora.Render() / GoogleMaps.Meteora.Controller() <br> Map settings will now be completely defined by the user and defaults will not be merged like before. <br> If you're lazy, maybe stick to version 2.0.0 on older projects. <br> yarn add @meteora-digital/google-maps@2.0.0
+###### Note: Breaking changes from version 2.1.0 <br> You will need to update your project to now target GoogleMaps.Meteora.Load() / GoogleMaps.Meteora.Render() / GoogleMaps.Meteora.Controller() <br> Map settings will now be completely defined by the user and defaults will not be merged like before. <br> If you're lazy, maybe stick to version 2.0.0 on older projects. <br> yarn add @meteora-digital/google-maps@2.0.1
 
 
 #### Our locations will be supplied as an array of data:
